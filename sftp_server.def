@@ -2,28 +2,34 @@ Bootstrap: docker
 From: alpine:latest
 
 %files
-
     banner.txt /etc/ssh/banner.txt
     sshd.conf /etc/ssh/sshd_config.d/sshd.conf
-    sftpuser_key /home/sftpuser/.ssh/authorized_keys
+    keys/user_rsa_key.pub /home/sftpuser/.ssh/authorized_keys
+    keys/host_rsa_key /etc/ssh/host_rsa_key
+    keys/host_rsa_key.pub /etc/ssh/host_rsa_key.pub
 
 %post
     apk add openssh-server
-    ssh-keygen -A
 
     addgroup sftp
     adduser -D -h /home/sftpuser -s /bin/sh -G sftp sftpuser
-    #echo "sshuser:password" | chpasswd # directive "PasswordAuthentication yes" must be present in sshd.conf
-
-    echo "Include /etc/ssh/sshd_config.d/sshd.conf" >> /etc/ssh/sshd_config
+    echo "sftpuser:password" | chpasswd # password is required, otherwise user is "locked"
 
     mkdir -p /home/sftpuser/.ssh
 
     chmod 700 /home/sftpuser/.ssh
     chmod 600 /home/sftpuser/.ssh/*
+    chown sftpuser:sftp /home/sftpuser/.ssh/authorized_keys # this apparently fails if the container is not run as root
+
+    chmod 600 /etc/ssh/host_rsa_key
+    chmod 600 /etc/ssh/host_rsa_key.pub
+
+%runscript
+    date 1>&2
+    /usr/sbin/sshd -D -p 8000 "$@"
+    echo "sshd exited with code $?"
 
 %startscript
-    date
     date 1>&2
-    /usr/sbin/sshd -D -p 8000 # -d -d -d 
-    echo "sshd exited. exit code: $?"
+    /usr/sbin/sshd -D -p 8000
+    echo "sshd exited with code $?"
