@@ -23,3 +23,18 @@ The main purpose of this repository is to provide scripts which utilize
 batch mode for automating the process of sending files. This is 
 particularily useful when more than just one or two files must be sent, 
 which, in the course of DNASC operations, is usually the case.
+
+## Test server
+
+This repository includes a containerized SFTP server for testing out 
+commands without any consequences.
+
+### Usage
+
+The test server is designed to be run using singularity, which is
+available on [BYU ORC](https://rc.byu.edu)'s system (marylou).
+
+1. Load singularity with `module load singularity`
+2. Build the container image with `./build.sh`
+3. Start the container with `./start.sh`
+4. Connect to the SFTP server with `./connect.sh`

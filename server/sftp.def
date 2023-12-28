@@ -3,18 +3,18 @@ From: alpine:latest
 
 %files
 
-    banner.txt /etc/ssh/banner.txt
+    banner /etc/ssh/banner
     sshd.conf /etc/ssh/sshd_config.d/sshd.conf
-    host_rsa_key /etc/ssh/host_rsa_key
-    host_rsa_key.pub /etc/ssh/host_rsa_key.pub
+    keys/host_key /etc/ssh/host_key
+    keys/host_key.pub /etc/ssh/host_key.pub
+    keys/user_key.pub /etc/ssh/authorized_keys/{{ user }}
     
 %post
 
     apk add openssh-server
 
-    echo "{{ user }}:x:{{ uid }}:{{ uid }}::{{ home }}:/bin/ash" >> /etc/passwd
-
-    chmod 600 /etc/ssh/host_rsa_key
+    chmod 600 /etc/ssh/host_key
+    chmod 600 /etc/ssh/authorized_keys/{{ user }}
 
 %runscript
 

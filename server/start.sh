@@ -3,4 +3,8 @@ if [ -z "$SFTP_PORT" ]; then
   exit 1
 fi
 
-singularity run sftp.sif -p $SFTP_PORT "$@"
+singularity run sftp.sif \
+  -p $SFTP_PORT "$@" \
+  > container.log 2>&1 &
+
+echo "container running with PID $!" > container.log

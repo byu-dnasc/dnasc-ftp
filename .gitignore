@@ -1,2 +1,4 @@
 *.sif
 *key*
+*.log
+*.pid
