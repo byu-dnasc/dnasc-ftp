@@ -1,0 +1,29 @@
+Bootstrap: docker
+From: alpine:latest
+
+%files
+
+    banner.txt /etc/ssh/banner.txt
+    sshd.conf /etc/ssh/sshd_config.d/sshd.conf
+    host_rsa_key /etc/ssh/host_rsa_key
+    host_rsa_key.pub /etc/ssh/host_rsa_key.pub
+    
+%post
+
+    apk add openssh-server
+
+    echo "{{ user }}:x:{{ uid }}:{{ uid }}::{{ home }}:/bin/ash" >> /etc/passwd
+
+    chmod 600 /etc/ssh/host_rsa_key
+
+%runscript
+
+    echo "Running as user: $(whoami)"
+    echo "Received arguments for sshd: $*"
+    /usr/sbin/sshd -D "$@"
+    echo "sshd exited with code $?"
+
+%startscript
+
+    /usr/sbin/sshd -D "$@"
+    echo "sshd exited with code $?"
