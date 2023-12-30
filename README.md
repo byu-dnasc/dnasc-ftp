@@ -35,6 +35,19 @@ The test server is designed to be run using singularity, which is
 available on [BYU ORC](https://rc.byu.edu)'s system (marylou).
 
 1. Load singularity with `module load singularity`
-2. Build the container image with `./build.sh`
-3. Start the container with `./start.sh`
-4. Connect to the SFTP server with `./connect.sh`
+2. Run `source sftp_test_env`
+3. Build the container image with `./build.sh`
+4. Start the container with `./start.sh`
+5. Connect to the SFTP server with `./connect.sh`
+
+### Troubleshooting
+
+If the default port is already in use, then the SFTP server
+will exit. To solve this conflict, pick a new port and change 
+the port used by `start.sh` and `connect.sh` to run the server
+by executing `export SFTP_PORT=[new port]`.
+
+If `sftp` fails to connect to the SFTP server, then `connect.sh` 
+will notify you if the container is not running, or if it is, if 
+`sshd` is not running within the container. This info will help 
+to direct further investigation.

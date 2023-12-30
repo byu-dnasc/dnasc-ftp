@@ -1,17 +1,21 @@
-if [ -z "$SFTP_PORT" ]; then
-  echo "SFTP_PORT is not exported."
-  exit 1
-fi
+PORT=${SFTP_PORT:-$DEFAULT_SFTP_PORT}
 
-# add host key to known hosts (if not already added)
-host_record="[localhost]:$SFTP_PORT $(awk '{print $1" "$2}' keys/host_key.pub)"
-if ! grep -Fxq "$host_record" $HOME/.ssh/known_hosts; then
-  echo "$host_record" >> $HOME/.ssh/known_hosts
-fi
-
+# attempt to connect to the server
 sftp \
   -i keys/user_key \
-  -P $SFTP_PORT $USER@localhost
+  -o StrictHostKeyChecking=no \
+  -o UserKnownHostsFile=/dev/null \
+  -o LogLevel=ERROR \
+  -P $PORT $USER@localhost
 
-# remove host key from known hosts (leave no trace)
-ssh-keygen -q -R "[localhost]:$SFTP_PORT" > /dev/null
+# if sftp exited with an error code, do some diagnostics
+if [ $? -ne 0 ]; then
+  if singularity instance list | grep -q $CONTAINER; then
+    # (the container is running)
+    if ! singularity exec instance://$CONTAINER ps aux | grep -q sshd; then
+      echo "The sftp server is not running."
+    fi
+  else
+    echo "The container is not running."
+  fi
+fi

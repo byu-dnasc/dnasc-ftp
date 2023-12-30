@@ -13,5 +13,6 @@ singularity build \
   --fakeroot \
   --force \
   --build-arg user="$USER" \
+  --build-arg default_sftp_port="$DEFAULT_SFTP_PORT" \
   sftp.sif \
   sftp.def

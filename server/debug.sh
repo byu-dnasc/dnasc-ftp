@@ -1,0 +1,1 @@
+singularity run sftp.sif -d "$@"

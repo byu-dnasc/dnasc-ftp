@@ -18,12 +18,26 @@ From: alpine:latest
 
 %runscript
 
+    PORT=${SFTP_PORT:-{{ default_sftp_port }}}
+    if [ -z "$SFTP_PORT" ]; then
+        echo "SFTP_PORT is not set. Trying default port $PORT..."
+    fi
     echo "Running as user: $(whoami)"
     echo "Received arguments for sshd: $*"
-    /usr/sbin/sshd -D "$@"
+    /usr/sbin/sshd -D -p $PORT "$@"
     echo "sshd exited with code $?"
+
+%environment
+
+    export SFTP_PORT
 
 %startscript
 
-    /usr/sbin/sshd -D "$@"
+    PORT=${SFTP_PORT:-{{ default_sftp_port }}}
+    if [ -z "$SFTP_PORT" ]; then
+        echo "SFTP_PORT is not set. Trying default port $PORT..."
+    else
+        echo "sshd is set to listen on port $PORT"
+    fi
+    /usr/sbin/sshd -D -p $PORT
     echo "sshd exited with code $?"
