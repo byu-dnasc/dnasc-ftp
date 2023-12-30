@@ -27,7 +27,11 @@ which, in the course of DNASC operations, is usually the case.
 ## Test server
 
 This repository includes a containerized SFTP server for testing out 
-commands without any consequences.
+commands without any consequences. The server runs in the background
+and behaves the same as a normal SFTP site, although it cannot
+accommodate large file uploads since any file writes within the container
+are stored in memory. Only the user's home directory is writable, i.e. 
+files should only be added to the user's home directory.
 
 ### Usage
 
@@ -38,7 +42,10 @@ available on [BYU ORC](https://rc.byu.edu)'s system (marylou).
 2. Run `source sftp_test_env`
 3. Build the container image with `./build.sh`
 4. Start the container with `./start.sh`
-5. Connect to the SFTP server with `./connect.sh`
+
+The SFTP server is now reachable. `./connect.sh` can be used 
+to connect to the SFTP server. When you are done, stop the container
+using `singularity instance stop sftp_server`.
 
 ### Troubleshooting
 
